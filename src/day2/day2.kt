@@ -26,11 +26,9 @@ fun getValue(values : List<Int>, noun: Int = 12, verb: Int = 2) : Int {
     nums[1] = noun
     nums[2] = verb
 
-    loop@ for (i in nums.indices) {
-        if (i % 4 != 0) continue
-
+    for (i in nums.indices step 4) {
         when(nums[i]) {
-            99 -> break@loop
+            99 -> return nums[0]
             1 -> nums.runOp(i, Int::plus)
             2 -> nums.runOp(i, Int::times)
         }
