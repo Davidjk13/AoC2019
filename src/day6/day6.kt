@@ -6,34 +6,35 @@ fun main() {
     val file = object {}.javaClass.getResource("input.txt")
     val lines = File(file.toURI()).useLines { it.toList() }
 
-    val orbits = lines.map { getOrbit(it) }
+    val orbits = lines.map { getOrbit(it) }.toMap()
 
     //part 1
-    val sum = orbits.map { findOrbits(it, orbits) }.sum() + orbits.size
+    val sum = orbits.map { findOrbits(it.key, orbits) }.sum()
     println(sum)
 
-    //part 2
-    val you = orbits.filter { it.orbit == "YOU" }[0]
-    println(findShortestPath(you, orbits, 0, Orbit("NOPE", "NOPE")))
+//    part 2
+    println(findShortestPath(orbits))
 }
 
-fun findShortestPath(you: Orbit, orbits: List<Orbit>, i: Int, previous: Orbit): Int? {
-    if (you.orbit == "SAN") return i - 2
+fun findShortestPath(orbits: Map<String, String>): Int {
+    val you = getChain("YOU", orbits)
+    val santa = getChain("SAN", orbits)
 
-    val linked = orbits.filter { it != previous && (it.orbit == you.point || it.point == you.orbit) }
-
-    if (linked.isEmpty()) return orbits.size
-    return linked.map { findShortestPath(it, orbits, i + 1, you) }.minBy { it ?: 0 }
+    val crossover = you.first { santa.contains(it) }
+    return you.indexOf(crossover) + santa.indexOf(crossover)
 }
 
-fun findOrbits(orbit: Orbit, orbits: List<Orbit>): Int {
-    val previous = orbits.filter { it.orbit == orbit.point }
-    return previous.count() + previous.map { findOrbits(it, orbits) }.sum()
+tailrec fun getChain(start: String, orbits: Map<String, String>, chains: List<String> = ArrayList()): List<String> {
+    val next = orbits[start] ?: return chains
+    return getChain(next, orbits, chains + next)
 }
 
-fun getOrbit(line: String): Orbit {
+tailrec fun findOrbits(orbit: String, orbits: Map<String, String>, count: Int = 0): Int {
+    val previous = orbits[orbit] ?: return count
+    return findOrbits(previous, orbits, count + 1)
+}
+
+fun getOrbit(line: String): Pair<String, String> {
     val split = line.split(")")
-    return Orbit(split[0], split[1])
+    return split[1] to split[0]
 }
-
-data class Orbit (val point : String, val orbit : String)
