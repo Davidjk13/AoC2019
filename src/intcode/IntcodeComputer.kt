@@ -6,6 +6,8 @@ class IntcodeComputer(val instructions: MutableList<Int>, var firstInput: Int = 
     var relativeBase = 0
 
     fun compute(): Int {
+
+        padInstructions()
         var i = 0
 
         while (i < instructions.size) {
@@ -21,10 +23,16 @@ class IntcodeComputer(val instructions: MutableList<Int>, var firstInput: Int = 
                 6 -> i = jumpIfFalse(i, opCode)
                 7 -> { lessThan(i, opCode); i+=4 }
                 8 -> { equals(i, opCode); i+=4 }
-                9 -> {relativeBase += getValue(opCode.p1, ip + 1); ip+=2 }
+                9 -> {relativeBase += getValue(opCode.p1, i + 1); i+=2 }
             }
         }
         return instructions[0]
+    }
+
+    private fun padInstructions() {
+        while (instructions.size < 10000000) {
+            instructions.add(0)
+        }
     }
 
     fun computeOut(input: Int = 1): Output {
@@ -100,7 +108,7 @@ class IntcodeComputer(val instructions: MutableList<Int>, var firstInput: Int = 
         return when (mode) {
             0 -> instructions[value]
             1 -> value
-            2 -> instructions[value + relativeBase]
+            2 -> instructions[value] + relativeBase //may need to move relative base for things other than output
             else -> value
         }
     }
