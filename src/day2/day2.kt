@@ -1,12 +1,18 @@
 package day2
+import intcode.IntcodeComputer
 import java.io.File
 
 fun main() {
     val file = object {}.javaClass.getResource("input.txt")
     val nums = File(file.toURI()).useLines { it.toList() }.get(0).split(",").map { it.toInt() }
 
+    val n = nums.toMutableList()
+    n[1] = 12
+    n[2] = 2
+    val comp = IntcodeComputer(n)
     //day 1
     println(getValue(nums))
+    println(comp.compute())
 
     //day 2
     for (i in 0..99) {
