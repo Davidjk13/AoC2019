@@ -10,6 +10,6 @@ fun main() {
     val comp = IntcodeComputer(nums.toMutableList())
     comp.compute()
 
-    val comp2 = IntcodeComputer(nums.toMutableList(), 5, 5)
+    val comp2 = IntcodeComputer(nums.toMutableList(), 5)
     comp2.compute()
 }
